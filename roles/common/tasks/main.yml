@@ -1,0 +1,93 @@
+---
+    - name: Install iptables
+      apt: 
+        name: iptables
+        state: present
+
+
+      
+    - name: Copy firewall systemd unit file into place (for systemd systems).
+      template:
+        src: firewall.unit.j2
+        dest: /etc/systemd/system/firewall.service
+        owner: root
+        group: root
+        mode: 0644
+      when: "ansible_service_mgr == 'systemd'"
+
+    - name: Configure firewall.sh
+      template: 
+        src: firewall.sh.j2
+        dest: /opt/firewall.sh
+        mode: 0700
+      notify: firewall autostart
+
+    - name: Install Python3 and Python3-pip, python3-venv
+      apt:
+        name: ['python3', 'python3-pip', 'python3-venv']
+        state: present
+
+    - name: Deploy smailcli
+      template: 
+        src: smailcli.py.j2
+        dest: /opt/smailcli.py
+        mode: 0700
+
+    - name: Deploy setup.py for smailcli
+      template: 
+        src: setup.py
+        dest: /opt/setup.py
+        mode: 0700
+
+    - name: Install smailcli
+      pip:
+        executable: 'pip3'
+        name: /opt/
+        editable: yes
+
+    - name: Ensure pyopenssl are installed.  
+      apt:
+        name: ['python-openssl']
+        state: present
+
+    - name: Ensure directory exists for local self-signed TLS certs.
+      file:
+        path: "{{ cert_dir }}"
+        state: directory
+
+    - name: Generate an OpenSSL private key.
+      openssl_privatekey:
+        path: "{{ smtpd_tls_key_file }}"
+
+    - name: Generate an OpenSSL CSR.
+      openssl_csr:
+        path: "{{ cert_dir }}/{{ myhostname }}.csr"
+        privatekey_path: "{{ smtpd_tls_key_file }}"
+        common_name: hah
+
+    - name: Generate a Self Signed OpenSSL certificate.
+      openssl_certificate:
+        path: "{{ smtpd_tls_cert_file }}"
+        privatekey_path: "{{ smtpd_tls_key_file }}"
+        csr_path: "{{ cert_dir }}/{{ myhostname }}.csr"
+        provider: selfsigned
+
+    - name: Create user for mailboxes
+      user:
+        system: True
+        name: vmail
+        uid: '500'
+        create_home: no
+        append: yes
+        comment: "User for mailbox management"
+        state: present
+
+    - name: Create mailbox folder
+      file:
+        path: /home/mailboxes
+        state: directory
+        owner: vmail
+        group: vmail
+        mode: 0700
+
+    

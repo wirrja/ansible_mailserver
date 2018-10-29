@@ -1,0 +1,13 @@
+version: '2'
+services:
+  db:
+    image: postgres:alpine
+    restart: always
+    environment: 
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: test
+    volumes:
+    - ./postgres-data-dev:/var/lib/postgresql/data
+    ports:
+      - 5432:5432

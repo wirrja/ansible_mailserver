@@ -1,0 +1,21 @@
+---
+
+- name: Install and Configure Mailserver
+  hosts: dev_mailservers
+  gather_facts: no
+  become: yes
+
+  pre_tasks:
+    - name: Install Python if not already present.
+      raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3-minimal)
+      changed_when: False
+
+    - name: Gather facts after Python is definitely present.
+      setup:
+
+  roles:
+    - common
+    - postgresql
+    - postfix
+    - dovecot
+

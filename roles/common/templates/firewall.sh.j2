@@ -1,0 +1,18 @@
+#!/bin/sh
+IPT="/sbin/iptables"
+
+$IPT --flush
+$IPT --delete-chain
+
+$IPT -P INPUT DROP
+$IPT -P FORWARD DROP
+$IPT -P OUTPUT ACCEPT
+
+$IPT -A INPUT -i lo -j ACCEPT
+$IPT -A OUTPUT -o lo -j ACCEPT
+
+$IPT -A INPUT -p tcp ! --syn -m state --state NEW -s 0.0.0.0/0 -j DROP
+
+$IPT -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+$IPT -A INPUT -p tcp -m multiport --dports 22,25,80,110,143,443,465,587,993,995,10000 -m state --state NEW -s 0.0.0.0/0 -j ACCEPT
+

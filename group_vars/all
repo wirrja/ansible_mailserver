@@ -1,0 +1,15 @@
+---
+cert_dir: /etc/letsencrypt/live/mail.wirr.ru
+# main.cf
+myhostname: mail.wirr.ru
+myorigin: wirr.ru
+mydestination: wirr.ru, mail.wirr.ru, localhost, localhost.localdomain, localhost
+smtpd_tls_cert_file: /etc/letsencrypt/live/mail.wirr.ru/fullchain.pem
+smtpd_tls_key_file: /etc/letsencrypt/live/mail.wirr.ru/privkey.pem
+
+# Database
+
+dbname: mail
+dbuser: mailreader
+dbpassword: dbpassword
+

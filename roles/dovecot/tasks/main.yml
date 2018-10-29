@@ -1,0 +1,24 @@
+---
+- name: Install Dovecot
+  apt: 
+    name: [
+        'dovecot-lmtpd',
+        'dovecot-imapd',
+        'dovecot-pgsql',
+        ]
+    state: present
+
+- name: Configure Dovecot (dovecot-sql.conf)
+  template: 
+    src: dovecot-sql.conf.j2
+    dest: /etc/dovecot/dovecot-sql.conf
+    mode: 0600
+  notify: reload dovecot
+
+
+- name: Configure Dovecot (dovecot.conf)
+  template:
+    src: dovecot.conf.j2
+    dest: /etc/dovecot/dovecot.conf
+    mode: 0644
+  notify: reload dovecot

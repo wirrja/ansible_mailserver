@@ -1,0 +1,6 @@
+---
+
+- name: restart dovecot
+  systemd:
+    name: dovecot
+    status: reloaded

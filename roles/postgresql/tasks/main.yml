@@ -1,0 +1,43 @@
+---
+- name: Install PostgreSQL
+  apt: 
+    name: ['postgresql-9.6', 'python-psycopg2', 'postgresql-contrib', 'libpq-dev']
+    state: present
+
+- name: Configure PostgreSQL (pg_hba.conf)
+  template:
+    src: pg_hba.conf.j2
+    dest: /etc/postgresql/9.6/main/pg_hba.conf
+    mode: 0644
+  notify: reload postgresql
+
+- name: Configure PostgreSQL (pg_ident.conf)
+  template:
+    src: pg_ident.conf.j2
+    dest: /etc/postgresql/9.6/main/pg_ident.conf
+    mode: 0640
+  notify: reload postgresql
+  
+- name: Ensure database is created
+  become_user: postgres
+  postgresql_db: 
+    name: "{{ dbname }}"
+    encoding: 'UTF-8'
+    lc_collate: 'en_US.UTF-8'
+    lc_ctype: 'en_US.UTF-8'
+    template: 'template0'
+    state: present
+  notify: reload postgresql
+
+- name: Ensure user has access to the database
+  become_user: postgres
+  postgresql_user: 
+    db: "{{ dbname }}"
+    name: "{{ dbuser }}"
+    password: "{{ dbpassword }}"
+    priv: ALL
+    state: present
+  notify: reload postgresql
+
+
+
