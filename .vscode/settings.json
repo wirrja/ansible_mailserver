@@ -1,5 +1,0 @@
-{
-    "python.pythonPath": "venv/bin/python",
-    "python.jediEnabled": false,
-    "python.linting.pylintEnabled": false
-}
