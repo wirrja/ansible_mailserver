@@ -16,6 +16,10 @@
 
 Init database and creating accounts:
 
-smailcli initdb
+$ sudo smailcli initdb
 
-smailcli adduser <user@domain.com>
+$ sudo smailcli adduser bonnie bonnie_maildir
+<h4>Tested on:</h4>
+
+* Ubuntu 16.04 - DO, vscale.io, Yandex.Cloud
+* Raspbian 9.4 - raspberrypie 
